@@ -40,11 +40,17 @@ async function start() {
           .multipliedBy(new BigNumber(1).pow(tokenInfo.decimals))
           .toString(10);
         if (brokerAddress) {
-          const transferTx = await contract.transfer(brokerAddress, amount);
-          await transferTx.wait();
-          logger.info(
-            `chainName: ${chainInfo.name} chainId: ${chainInfo.chainId} transfer hash: ${transferTx.hash} brokerAddress: ${brokerAddress} amount: ${amount}`
-          );
+          try {
+            const transferTx = await contract.transfer(brokerAddress, amount);
+            await transferTx.wait();
+            logger.info(
+              `transfer success: chainName: ${chainInfo.name} chainId: ${chainInfo.chainId} hash: ${transferTx.hash} brokerAddress: ${brokerAddress} amount: ${amount}`
+            );
+          } catch (error) {
+            logger.info(
+              `transfer failed: chainName: ${chainInfo.name} chainId: ${chainInfo.chainId}`
+            );
+          }
 
           // approve
           const brokerContract = new Contract(
@@ -53,14 +59,20 @@ async function start() {
             signer
           );
 
-          const approveTx = await brokerContract.approveZkLink(
-            tokenInfo.address,
-            MaxUint256
-          );
-          await approveTx.wait();
-          logger.info(
-            `chainName: ${chainInfo.name} chainId: ${chainInfo.chainId} approveZkLink hash: ${transferTx.hash} spender: ${brokerAddress} amount: ${MaxUint256}`
-          );
+          try {
+            const approveTx = await brokerContract.approveZkLink(
+              tokenInfo.address,
+              MaxUint256
+            );
+            await approveTx.wait();
+            logger.info(
+              `approveZkLink Success: chainName: ${chainInfo.name} chainId: ${chainInfo.chainId} hash: ${approveTx.hash} spender: ${brokerAddress} amount: ${MaxUint256}`
+            );
+          } catch (error) {
+            logger.info(
+              `approveZkLink Failed: chainName: ${chainInfo.name} chainId: ${chainInfo.chainId}`
+            );
+          }
         }
       }
     }
