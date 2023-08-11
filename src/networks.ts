@@ -67,7 +67,7 @@ export const chains: { [chainName: string]: IChainInfo } = {
     name: "optimism-testnet",
     url: "https://optimism-goerli.publicnode.com",
     chainId: 420,
-    brokerAddress: "", // TODO:
+    brokerAddress: "0xBcA5eE50B8F2679aa7281fD48817679b82D1c4DF", // TODO:
   },
   "11": {
     name: "base-testnet",
@@ -91,6 +91,6 @@ export const chains: { [chainName: string]: IChainInfo } = {
     name: "taiko-testnet",
     url: "https://rpc.test.taiko.xyz",
     chainId: 167005,
-    brokerAddress: "", // TODO:
+    brokerAddress: "0xdbA72d5d26823F0E92FacDE8b3CE4f9897595f35", // TODO:
   },
 };
