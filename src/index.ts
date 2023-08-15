@@ -8,7 +8,7 @@ import BROKER_ABI from "./abis/broker.abi.json";
 import { Contract, ethers, MaxUint256 } from "ethers";
 import BigNumber from "bignumber.js";
 
-import tokens from "./tokens.json";
+import tokens from "./tokens";
 import { chains as chainsConfig } from "./networks";
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
@@ -19,10 +19,12 @@ async function start() {
   logger.info("start running ...");
   const chainInfoArray = Object.values(tokens.result);
   for (const tokenWithChainInfo of chainInfoArray) {
+    console.log(`tokenWithChainInfo`, tokenWithChainInfo.id);
     const { chains } = tokenWithChainInfo;
     const zkchainIds = Object.keys(chains);
     for (const zkchainId of zkchainIds) {
       const rpcinfo = chainsConfig[zkchainId];
+      console.log(rpcinfo.name);
       const provider = new ethers.JsonRpcProvider(rpcinfo.url);
       const signer = new ethers.Wallet(PRIVATE_KEY, provider);
       const tokenInfo = tokenWithChainInfo.chains[zkchainId];
@@ -36,7 +38,7 @@ async function start() {
 
         // check balance
         const amount = new BigNumber(1000000)
-          .multipliedBy(new BigNumber(1).pow(tokenInfo.decimals))
+          .multipliedBy(new BigNumber(10).pow(tokenInfo.decimals))
           .toString(10);
 
         const balance = await contract.balanceOf(signer.address);
@@ -64,7 +66,7 @@ async function start() {
               `transfer ${tokenWithChainInfo.symbol} success: chainName: ${chainInfo.name} chainId: ${chainInfo.chainId} hash: ${transferTx.hash} brokerAddress: ${brokerAddress} amount: ${amount}`
             );
           } catch (error) {
-            logger.info(
+            logger.error(
               `transfer ${tokenWithChainInfo.symbol} failed: chainName: ${chainInfo.name} chainId: ${chainInfo.chainId}`
             );
           }
@@ -86,7 +88,7 @@ async function start() {
               `approveZkLink ${tokenWithChainInfo.symbol} Success: chainName: ${chainInfo.name} chainId: ${chainInfo.chainId} hash: ${approveTx.hash} spender: ${brokerAddress} amount: ${MaxUint256}`
             );
           } catch (error) {
-            logger.info(
+            logger.error(
               `approveZkLink ${tokenWithChainInfo.symbol} Failed: chainName: ${chainInfo.name} chainId: ${chainInfo.chainId}`
             );
           }
